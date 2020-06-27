@@ -13,10 +13,10 @@ import scala.language.postfixOps
 
 object Safebooru {
     def getFiles(tags: Array[String], limit: Int): Any = {
-        val files = Gelbooru.getFilesLinks(tags, limit)
+        val files = Safebooru.getFilesLinks(tags, limit)
 
         for(file <- files) {
-            println(Gelbooru.downloadFile(file("url"), file("name")))
+            println(Safebooru.downloadFile(file("url"), file("name")))
             Thread.sleep(1000)
         }
     }
