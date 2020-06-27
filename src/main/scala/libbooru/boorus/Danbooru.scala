@@ -1,17 +1,13 @@
 package ovh.fandemonium.libbooru
 
 import java.net.{MalformedURLException, URL}
-import java.io.File
 import java.io.FileWriter
 import java.io.IOException
-import java.nio.file.{Paths, Files}
 import scala.xml.XML
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
-import sys.process._
-import scala.language.postfixOps
 
-object Danbooru {
+object Danbooru extends Booru {
     def getFiles(tags: Array[String], limit: Int): Any = {
         val files = Danbooru.getFilesLinks(tags, limit)
 
@@ -44,15 +40,5 @@ object Danbooru {
         }
 
         posts_arr.toArray
-    }
-
-    def downloadFile(url: String, name: String): String = {
-        val directory = Paths.get(".").toAbsolutePath + "/img/"
-        if(!new File(directory).exists) {
-            new File(directory).mkdir
-        }
-        val filename = directory  + name
-        new URL(url) #> new File(filename) !!;
-        filename
     }
 }

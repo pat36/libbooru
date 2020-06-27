@@ -1,17 +1,13 @@
 package ovh.fandemonium.libbooru
 
-import java.net.URL
-import java.io.File
+import java.net.{MalformedURLException, URL}
 import java.io.FileWriter
 import java.io.IOException
-import java.nio.file.{Paths, Files}
 import scala.xml.XML
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
-import sys.process._
-import scala.language.postfixOps
 
-object Safebooru {
+object Safebooru extends Booru {
     def getFiles(tags: Array[String], limit: Int): Any = {
         val files = Safebooru.getFilesLinks(tags, limit)
 
@@ -29,26 +25,20 @@ object Safebooru {
         val posts = xml\"post"
 
         for(post <- posts) {
-            val url = post\@"file_url"
-            val tags = post\@"tags"
-            val md5 = post\@"md5"
-            val url_segments = new URL(url).getFile.split("/")
-            val name = url_segments(url_segments.length - 1)
-            val post_map = Map("url" -> url, "tags" -> tags, "md5" -> md5, "name" -> name)
+            try {
+                val url = post\@"file_url"
+                val tags = post\@"tags"
+                val md5 = post\@"md5"
+                val url_segments = new URL(url).getFile.split("/")
+                val name = url_segments(url_segments.length - 1)
+                val post_map = Map("url" -> url, "tags" -> tags, "md5" -> md5, "name" -> name)
 
-            posts_arr += post_map
+                posts_arr += post_map
+            } catch {
+                case e: MalformedURLException => println("couldn't download file")
+            }
         }
 
         posts_arr.toArray
-    }
-
-    def downloadFile(url: String, name: String): String = {
-        val directory = Paths.get(".").toAbsolutePath + "/img/"
-        if(!new File(directory).exists) {
-            new File(directory).mkdir
-        }
-        val filename = directory  + name
-        new URL(url) #> new File(filename) !!;
-        filename
     }
 }
